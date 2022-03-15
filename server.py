@@ -4,7 +4,6 @@ from threading import Thread
 
 # Client joining the network
 def clientJoin(dataList, clientSocket, peerID):
-
     # Get IP and port from client
     host = dataList[1].split(':')[1]
     port = dataList[2].split(':')[1]
@@ -15,10 +14,11 @@ def clientJoin(dataList, clientSocket, peerID):
     print("Index server: ")
     print(P2P.activePeers)
     clientSocket.send('You have successfully joined the P2P network'.encode())
+    clientSocket.close()
 
 
 # Handle new requests from clients
-def newConnection(clientSocket,peerID):
+def newConnection(clientSocket, peerID):
     message = clientSocket.recv(1024).decode()
     print("New request from client")
     messageList = message.split('\n')
@@ -26,7 +26,7 @@ def newConnection(clientSocket,peerID):
     for line in messageList:
         print(line)
     if messageList[0].split(' ')[0] == 'JOIN':
-        clientJoin(messageList, clientSocket,peerID)
+        clientJoin(messageList, clientSocket, peerID)
 
 
 class P2P:
@@ -55,7 +55,7 @@ while (True):
     clientSocket, clientAddress = serverSocket.accept()
     peerID += 1
     print('Got connection from', clientAddress)
-    newThread = Thread(target=newConnection, args=(clientSocket,peerID))
+    newThread = Thread(target=newConnection, args=(clientSocket, peerID))
     newThread.start()
 print('shutting down central server')
 serverSocket.close()
