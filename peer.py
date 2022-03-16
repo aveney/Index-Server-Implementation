@@ -56,7 +56,8 @@ def sendRequestToServer(request, serverHost, serverPort):
     clientSocket.send(request.encode())
     response = clientSocket.recv(1024)
 
-    # Get the updated list of active peers
+    # Get the updated dictionary of active peers as a byte string
+    # Convert the byte string to a dictionary object
     deserializedActivePeers = pickle.loads(response)
     P2P.activePeers = deserializedActivePeers
     print('Response from the central server:')
@@ -64,12 +65,13 @@ def sendRequestToServer(request, serverHost, serverPort):
     clientSocket.close()
 
 
-# handle quitting
+# Handle quitting
 def quitConnection(serverHost, serverPort):
     note = "EXIT P2P\nHost: " + serverHost + '\n' + "Port: " + str(serverPort)
     sendRequestToServer(note, serverHost, serverPort)
 
 
+# Request dictionary of active peers from the index server
 def getActivePeers(serverHost, serverPort):
     note = "GET P2P\nHost: " + serverHost + '\n' + "Port: " + str(serverPort)
     sendRequestToServer(note, serverHost, serverPort)

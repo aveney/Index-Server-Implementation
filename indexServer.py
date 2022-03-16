@@ -16,33 +16,42 @@ def clientJoin(dataList, clientSocket, peerID):
     host = dataList[1].split(':')[1]
     port = dataList[2].split(':')[1]
 
-    # List for client information
+    # List for new client information
     clientInfo = [host, port, "Absent"]
     P2P.activePeers[peerID] = clientInfo
     print("Current Index Server: ")
     print(P2P.activePeers)
+
+    # Convert dictionary of active peers to a byte string
     serializedActivePeers = pickle.dumps(P2P.activePeers)
+    # Send the string
     clientSocket.send(serializedActivePeers)
     clientSocket.close()
 
 
+# Send active peers dictionary to the requesting client
 def provideList(dataList, clientSocket):
     # Get IP and port from client
     host = dataList[1].split(':')[1]
     port = dataList[2].split(':')[1]
 
     print("Sending active peers list...")
+
+    # Convert dictionary of active peers to a byte string
     serializedActivePeers = pickle.dumps(P2P.activePeers)
+    # Send the string
     clientSocket.send(serializedActivePeers)
     clientSocket.close()
 
 
 # Handle new requests from clients
 def newConnection(clientSocket):
+    # Received a message from the client
     message = clientSocket.recv(1024).decode()
     print("New request from client")
     messageList = message.split('\n')
     # print(messageList)
+    # Determine the type of message received from the client
     for line in messageList:
         print(line)
     if messageList[0].split(' ')[0] == 'JOIN':
